@@ -5,6 +5,78 @@ All notable changes to Navigator - Copilot Migration Pathfinder will be document
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-03-28
+
+### Added
+- 🚀 **MAJOR: Dual-Mode Deployment System**
+  - **Quick Mode** (default) - Fast testing deployment (30-60 seconds, no solutions)
+  - **Full Mode** - Production deployment with solution packaging (4-8 minutes)
+  - Smart mode detection based on target environment (Production always uses Full mode)
+  - New enhanced script: `Invoke-Navigator-Enhanced.ps1`
+
+- ⚡ **Quick Deploy Module** (`Modules\Copilot-QuickDeploy.psm1`)
+  - Direct copilot deployment without solution creation
+  - Updates existing copilots in place
+  - Perfect for rapid testing and iteration
+  - No solution artifacts to manage
+  - Automatic cleanup (just delete the bot when done)
+
+- 🧩 **Core Shared Module** (`Modules\Copilot-Core.psm1`)
+  - Shared utilities used by both Quick and Full modes
+  - Authentication, environment management, copilot operations
+  - Common helper functions
+  - Consistent behavior across modes
+
+- 📚 **Comprehensive Documentation Suite** (in `docs/` folder)
+  - `ARCHITECTURE-DECISION.md` - Why dual-mode integration was chosen
+  - `BOTS-WITHOUT-SOLUTIONS.md` - Technical explanation of bots without solutions
+  - `THREE-CHANNEL-ARCHITECTURE.md` - How the three channels work (Claude Skill, PowerShell, VS Code)
+  - `IMPLEMENTATION-GUIDE.md` - Step-by-step implementation details
+
+- 🎯 **Enhanced Skill Definition** (`skills/navigator-enhanced.md`)
+  - Updated for dual-mode support
+  - Clear instructions for Quick vs Full mode
+  - Example conversations and workflows
+  - Mode selection logic
+
+### Changed
+- **Default behavior:** Quick mode is now default for all non-production deployments
+- **Production safety:** Production target automatically switches to Full mode regardless of user request
+- **Three-channel support:** Same functionality accessible via Claude Skill, PowerShell, and VS Code (future)
+- Enhanced command parsing: Supports "quick", "test", "deploy", "full", "migrate", "production" keywords
+- Improved user experience with clear mode indicators and timing estimates
+
+### Architecture
+- **Quick Mode:**
+  - Deploys copilot directly to target environment
+  - No solution packaging overhead
+  - Updates existing copilots in place (overwrites)
+  - Fast: 30-60 seconds average
+  - Use case: Testing, iteration, development
+
+- **Full Mode:**
+  - Creates solution with auto-generated name
+  - Packages all components with dependencies
+  - Managed solution support
+  - Slower: 4-8 minutes average
+  - Use case: Production, formal ALM, audit trail
+
+### Technical Details
+- Bots can exist without custom solutions (in Default Solution)
+- Solutions are optional packaging for ALM, not runtime requirements
+- Quick deploy creates/updates bots as unmanaged entities
+- Full deploy creates managed solutions for production governance
+
+### Breaking Changes
+- None - Existing `Invoke-Navigator.ps1` continues to work for Full mode
+- New `Invoke-Navigator-Enhanced.ps1` provides dual-mode access
+- Fully backward compatible with v1.x workflows
+
+### Migration from v1.x
+- v1.x users: Continue using `Invoke-Navigator.ps1` (unchanged)
+- v2.0 users: Use `Invoke-Navigator-Enhanced.ps1` for Quick and Full modes
+- Both scripts can coexist
+
 ## [1.1.0] - 2026-03-28
 
 ### Added
@@ -16,6 +88,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automated summary generation
   - Export analysis as Markdown or JSON
   - New analysis module (`Modules\Copilot-Analysis.psm1`)
+- 🧭 **NEW: Automatic Solution Management** - Clean solution creation for each import
+  - Auto-creates new solution for each copilot import
+  - Naming pattern: `Navigator_BotName_YYYYMMDD_HHMMSS`
+  - Prevents copilots from going to Default Solution
+  - Includes bot and all components in the new solution
+  - Better ALM (Application Lifecycle Management) support
 - 🎯 Main menu system to choose between Migration and Analysis
 - 📊 Interactive analysis workflow with detailed reports
 - ✅ Quality metrics: Good practices detection, improvement suggestions, issue identification
@@ -29,6 +107,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated quotes from "In the desert, the tank is king" to "Every journey begins with a single step"
 - Refactored main execution to show operation selection menu
 - Main workflow now returns to menu after completion instead of exiting
+
+### Fixed
+- 🐛 **CRITICAL: Import Error 0x80060888** - Fixed "CRM do not support direct update of Entity Reference properties"
+  - Removed `parentbotid` field before setting `@odata.bind` navigation property
+  - Now properly removes all system fields and entity references before import
+  - Prevents Dataverse API error when importing bot components
+- 🐛 **Missing Components Import** - Fixed only Topics being imported
+  - Now imports ALL component types: Topics, Triggers, AND Skills
+  - Previously Triggers and Skills were counted but not actually imported
+  - Components now correctly linked to parent bot using navigation properties
+
+### Documentation
+- 📚 Enhanced README to 56KB with comprehensive documentation
+- 📂 Added Project Structure section explaining all scripts and modules
+- ⚡ Documented test-setup.ps1 quick prerequisites checker
+- 🏗️ Added Solution Management feature documentation
+- 📦 Updated Distribution section with current file inventory
+- 🎨 Updated Demo-Navigator.ps1 branding to "Pathfinder"
 
 ## [1.0.0] - 2026-03-28
 

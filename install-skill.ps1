@@ -28,7 +28,7 @@
 
 .NOTES
     Author: Copilot Zapper Team
-    Version: 1.0.0
+    Version: 2.0.0
     Requires: PowerShell 7.0+, Azure CLI
 #>
 
@@ -45,7 +45,7 @@ $ErrorActionPreference = "Stop"
 
 # Configuration
 $skillName = "navigator"
-$skillVersion = "1.0.0"
+$skillVersion = "2.0.0"
 $claudeDir = Join-Path $env:USERPROFILE ".claude"
 $skillsDir = Join-Path $claudeDir "skills\$skillName"
 $sourceDir = $PSScriptRoot
@@ -55,9 +55,9 @@ function Show-Banner {
     Clear-Host
     Write-Host ""
     Write-Host "╔══════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "║     🎖️  NAVIGATOR SKILL INSTALLER  🎖️                      ║" -ForegroundColor Yellow
+    Write-Host "║     🧭  NAVIGATOR SKILL INSTALLER v2.0  🧭               ║" -ForegroundColor Yellow
     Write-Host "║                                                          ║" -ForegroundColor Cyan
-    Write-Host "║     Copilot Migration Commander for Claude Code         ║" -ForegroundColor White
+    Write-Host "║     Copilot Deployment Tool for Claude Code             ║" -ForegroundColor White
     Write-Host "╚══════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
     Write-Host ""
 }
@@ -108,7 +108,8 @@ function Test-Prerequisites {
 
     # Check source files
     $requiredFiles = @(
-        "skills\navigator.md",
+        "skills\navigator\SKILL.md",
+        "skills\navigator\scripts\Invoke-Navigator-Enhanced.ps1",
         "README.md"
     )
 
@@ -138,7 +139,7 @@ function Install-NavigatorSkill {
 
     $action = if ($IsUpdate) { "Updating" } else { "Installing" }
 
-    Write-Host "🎖️  $action Navigator - Copilot Migration Commander" -ForegroundColor Cyan
+    Write-Host "🧭  $action Navigator - Copilot Deployment Tool" -ForegroundColor Cyan
     Write-Host "   Version: $skillVersion" -ForegroundColor Gray
     Write-Host ""
 
@@ -167,25 +168,19 @@ function Install-NavigatorSkill {
     Write-Host ""
     Write-Host "📋 Copying skill files..." -ForegroundColor Cyan
 
-    # Copy main skill definition
-    $skillFile = Join-Path $sourceDir "skills\navigator.md"
-    if (Test-Path $skillFile) {
-        Copy-Item -Path $skillFile -Destination $skillsDir -Force
-        Write-Host "   ✅ navigator.md" -ForegroundColor Green
-    }
-
-    # Copy helper scripts
-    $helpers = Get-ChildItem -Path $sourceDir -Filter "*.ps1" -File | Where-Object {
-        $_.Name -match '^\..*\.ps1$' -or $_.Name -eq "install-skill.ps1"
-    }
-
-    foreach ($helper in $helpers) {
-        Copy-Item -Path $helper.FullName -Destination $skillsDir -Force
-        Write-Host "   ✅ $($helper.Name)" -ForegroundColor Green
+    # Copy entire skill directory structure
+    $sourceSkillDir = Join-Path $sourceDir "skills\navigator"
+    if (Test-Path $sourceSkillDir) {
+        # Copy the entire navigator directory
+        Copy-Item -Path $sourceSkillDir -Destination (Split-Path $skillsDir -Parent) -Recurse -Force
+        Write-Host "   ✅ SKILL.md" -ForegroundColor Green
+        Write-Host "   ✅ scripts/Invoke-Navigator-Enhanced.ps1" -ForegroundColor Green
+        Write-Host "   ✅ scripts/Invoke-Navigator.ps1" -ForegroundColor Green
+        Write-Host "   ✅ scripts/Modules/ (4 modules)" -ForegroundColor Green
     }
 
     # Copy documentation
-    $docs = @("README.md", "QUICK_START.md", "LICENSE", "DISTRIBUTION.md")
+    $docs = @("README.md", "CHANGELOG.md", "LICENSE")
     foreach ($doc in $docs) {
         $docPath = Join-Path $sourceDir $doc
         if (Test-Path $docPath) {
@@ -228,7 +223,7 @@ try {
     if ($success) {
         Write-Host ""
         Write-Host "╔══════════════════════════════════════════════════════════╗" -ForegroundColor Green
-        Write-Host "║     🎖️  NAVIGATOR SKILL INSTALLED SUCCESSFULLY  🎖️        ║" -ForegroundColor Green
+        Write-Host "║     🧭  NAVIGATOR SKILL INSTALLED SUCCESSFULLY  🧭       ║" -ForegroundColor Green
         Write-Host "╚══════════════════════════════════════════════════════════╝" -ForegroundColor Green
         Write-Host ""
         Write-Host "📍 Installed to: $skillsDir" -ForegroundColor Gray
@@ -247,7 +242,7 @@ try {
         Write-Host "   - Update: .\install-skill.ps1 -Update" -ForegroundColor Gray
         Write-Host "   - Uninstall: .\install-skill.ps1 -Uninstall" -ForegroundColor Gray
         Write-Host ""
-        Write-Host "*'In the desert, the tank is king' - Navigator* 🎖️" -ForegroundColor Cyan
+        Write-Host "*'Every journey begins with a single step' - Navigator* 🧭" -ForegroundColor Cyan
         Write-Host ""
     }
 }
