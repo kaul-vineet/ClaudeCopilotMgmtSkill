@@ -1,7 +1,7 @@
 {
   "name": "navigator-vscode",
   "displayName": "Navigator",
-  "description": "Quick Deploy and Full Migration for Microsoft Copilot Studio bots",
+  "description": "Smart Test and DV Solution Migration for Microsoft Copilot Studio bots",
   "version": "1.0.0",
   "publisher": "copilot-zapper-team",
   "engines": {
@@ -13,17 +13,17 @@
   "contributes": {
     "commands": [
       {
-        "command": "navigator.quickDeploy",
-        "title": "Navigator: Quick Deploy"
+        "command": "navigator.smartTest",
+        "title": "Navigator: Smart Test"
       },
       {
-        "command": "navigator.fullMigration",
-        "title": "Navigator: Full Migration"
+        "command": "navigator.dvMigration",
+        "title": "Navigator: DV Solution Migration"
       }
     ],
     "keybindings": [
       {
-        "command": "navigator.quickDeploy",
+        "command": "navigator.smartTest",
         "key": "ctrl+shift+t",
         "mac": "cmd+shift+t"
       }

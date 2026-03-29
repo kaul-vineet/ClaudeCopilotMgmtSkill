@@ -14,14 +14,14 @@
 
 Navigator is a powerful deployment tool for Microsoft Copilot Studio that gives you **two ways to move copilots between environments:**
 
-### ⚡ Quick Mode
+### ⚡ Smart Test Mode
 **For Testing & Iteration**
 - ⏱️ **30-60 seconds** deployment time
 - 🚫 No solution packaging
 - ♻️ Updates in place
 - 🧹 Easy cleanup
 
-### 📦 Full Mode
+### 📦 DV Solution Migration
 **For Production**
 - ⏱️ 4-8 minutes deployment time
 - ✅ Solution packaging with versioning
@@ -35,8 +35,8 @@ Navigator is a powerful deployment tool for Microsoft Copilot Studio that gives 
 - [Quick Start](#-quick-start)
 - [Installation](#-installation)
 - [Usage](#-usage)
-  - [Quick Deploy](#-quick-deploy-testing)
-  - [Full Migration](#-full-migration-production)
+  - [Smart Test](#-quick-deploy-testing)
+  - [DV Solution Migration](#-full-migration-production)
   - [Three Ways to Use](#-three-ways-to-use-navigator)
 - [What Each Script Does](#-what-each-script-does)
 - [How It Works](#-how-it-works)
@@ -60,7 +60,7 @@ winget install Microsoft.AzureCLI
 cd C:\code\ClaudeCopilotMgmtSkill
 
 # 3. Quick deploy to test environment
-.\Invoke-Navigator-Enhanced.ps1 -Mode Quick
+.\Navigator.ps1 -Mode SmartTest
 ```
 
 **That's it!** Select your copilot and target environment, and you're testing in ~40 seconds.
@@ -117,7 +117,7 @@ No installation needed! Just run the scripts directly:
 
 ```powershell
 cd C:\code\ClaudeCopilotMgmtSkill
-.\Invoke-Navigator-Enhanced.ps1
+.\Navigator.ps1
 ```
 
 ---
@@ -145,28 +145,28 @@ Or sideload during development:
 2. Press `F5` to launch Extension Development Host
 
 **After installing:**
-- `Ctrl+Shift+T` → Quick Deploy
-- Command Palette (`Ctrl+Shift+P`) → "Navigator: Quick Deploy" or "Navigator: Full Migration"
+- `Ctrl+Shift+T` → Smart Test
+- Command Palette (`Ctrl+Shift+P`) → "Navigator: Smart Test" or "Navigator: DV Solution Migration"
 
 ---
 
 ## 🎨 Usage
 
-### ⚡ Quick Deploy (Testing)
+### ⚡ Smart Test (Any Environment)
 
 **Use When:** Testing changes, validating functionality, iterating on development
 
 **Example 1: Interactive Mode**
 ```powershell
-.\Invoke-Navigator-Enhanced.ps1 -Mode Quick
+.\Navigator.ps1 -Mode SmartTest
 ```
 
 Follow the prompts to select copilot and target environment.
 
 **Example 2: With Parameters**
 ```powershell
-.\Invoke-Navigator-Enhanced.ps1 `
-    -Mode Quick `
+.\Navigator.ps1 `
+    -Mode SmartTest `
     -BotName "Sales Assistant" `
     -Source "Development" `
     -Target "UAT" `
@@ -175,12 +175,12 @@ Follow the prompts to select copilot and target environment.
 
 **Example 3: Shorthand**
 ```powershell
-.\Invoke-Navigator-Enhanced.ps1 quick
+.\Navigator.ps1 quick
 ```
 
 **What Happens:**
 1. ✅ Gets copilot from Development
-2. ✅ Deploys directly to UAT (no solution)
+2. ✅ Deploys directly to any environment (no solution)
 3. ✅ Updates existing copilot or creates new
 4. ✅ Publishes immediately
 5. ✅ Opens test chat in browser
@@ -189,24 +189,24 @@ Follow the prompts to select copilot and target environment.
 
 ---
 
-### 📦 Full Migration (Production)
+### 📦 DV Solution Migration (Production)
 
 **Use When:** Deploying to production, need audit trail, formal ALM process
 
 **Example 1: Interactive Mode**
 ```powershell
-.\Invoke-Navigator-Enhanced.ps1 -Mode Full
+.\Navigator.ps1 -Mode DV
 ```
 
 **Example 2: To Production**
 ```powershell
-.\Invoke-Navigator-Enhanced.ps1 `
-    -Mode Full `
+.\Navigator.ps1 `
+    -Mode DV `
     -BotName "Sales Assistant" `
     -Target "Production"
 ```
 
-> 🔒 **Production Safety:** Deploying to "Production" automatically uses Full mode, even if you specify Quick mode.
+> 🔒 **Production Safety:** Deploying to "Production" automatically uses DV Solution Migration mode, even if you specify Smart Test mode.
 
 **What Happens:**
 1. ✅ Exports copilot from source
@@ -247,7 +247,7 @@ Navigator:
 #### 2️⃣ PowerShell Script
 
 ```powershell
-PS> .\Invoke-Navigator-Enhanced.ps1 -Mode Quick -BotName "Sales Assistant" -Target "UAT"
+PS> .\Navigator.ps1 -Mode SmartTest -BotName "Sales Assistant" -Target "UAT"
 ```
 
 **Pros:**
@@ -281,20 +281,20 @@ PS> .\Invoke-Navigator-Enhanced.ps1 -Mode Quick -BotName "Sales Assistant" -Targ
 
 ### Main Scripts
 
-#### `Invoke-Navigator-Enhanced.ps1`
+#### `Navigator.ps1`
 **The dual-mode deployment script**
 
 ```powershell
-# Quick mode (default)
-.\Invoke-Navigator-Enhanced.ps1 -Mode Quick
+# Smart Test mode (default)
+.\Navigator.ps1 -Mode SmartTest
 
-# Full mode
-.\Invoke-Navigator-Enhanced.ps1 -Mode Full
+# DV Solution Migration mode
+.\Navigator.ps1 -Mode DV
 ```
 
 **What it does:**
-- Routes between Quick and Full modes
-- Smart mode detection (Production → auto Full)
+- Routes between Quick and DV Solution Migration modes
+- Production safety (auto-switches to DV Solution Migration)
 - Interactive or parametric usage
 - Progress reporting
 - Error handling
@@ -330,7 +330,7 @@ PS> .\Invoke-Navigator-Enhanced.ps1 -Mode Quick -BotName "Sales Assistant" -Targ
 ### Modules
 
 #### `Modules/Copilot-Core.psm1`
-**Shared utilities used by both Quick and Full modes**
+**Shared utilities used by both Quick and DV Solution Migration modes**
 
 Functions:
 - Authentication (`Get-AuthHeaders`)
@@ -341,7 +341,7 @@ Functions:
 ---
 
 #### `Modules/Copilot-QuickDeploy.psm1`
-**Quick deploy logic (no solutions)**
+**Smart Test logic (no solutions)**
 
 Functions:
 - `Invoke-QuickDeploy` - Main quick deploy function
@@ -349,7 +349,7 @@ Functions:
 - Component management
 - Fast iteration support
 
-**Used by:** Quick mode only
+**Used by:** Smart Test mode only
 
 ---
 
@@ -381,7 +381,7 @@ Functions:
 
 ## 🔧 How It Works
 
-### Quick Mode Architecture
+### Smart Test Mode Architecture
 
 ```
 Source Environment
@@ -412,7 +412,7 @@ Result: Copilot deployed directly (NO SOLUTION)
 
 ---
 
-### Full Mode Architecture
+### DV Solution Migration Mode Architecture
 
 ```
 Source Environment
@@ -449,17 +449,17 @@ if ($Target -eq "Production") {
 }
 
 # Command-based detection
-"quick" | "test" | "deploy" → Quick mode
-"full" | "migrate" | "production" → Full mode
+"quick" | "test" | "deploy" → Smart Test mode
+"full" | "migrate" | "production" → DV Solution Migration mode
 
-# Default: Quick mode (testing is most common)
+# Default: Smart Test mode (testing is most common)
 ```
 
 ---
 
 ## 🔍 Troubleshooting
 
-### Quick Mode Issues
+### Smart Test Mode Issues
 
 #### "Component failed to update"
 **Cause:** Component has dependencies not in target environment
@@ -469,11 +469,11 @@ if ($Target -eq "Production") {
 # Check for missing connections, flows, or custom connectors
 # Either:
 1. Import dependencies first, or
-2. Use Full mode (handles dependencies)
+2. Use DV Solution Migration mode (handles dependencies)
 ```
 
 #### "Copilot already exists"
-**This is normal!** Quick mode updates existing copilots.
+**This is normal!** Smart Test mode updates existing copilots.
 
 If you want a fresh copy:
 ```powershell
@@ -483,7 +483,7 @@ If you want a fresh copy:
 
 ---
 
-### Full Mode Issues
+### DV Solution Migration Mode Issues
 
 #### "Solution import failed"
 **Common causes:**
@@ -555,7 +555,7 @@ Navigator includes optional AI features for enhanced migration analysis:
 $env:ANTHROPIC_API_KEY = "sk-ant-your-key-here"
 
 # Then use Navigator normally
-.\Invoke-Navigator-Enhanced.ps1
+.\Navigator.ps1
 ```
 
 **Skill-Aware Mode:**
@@ -574,8 +574,8 @@ Navigator works great in automation scenarios:
 - name: Deploy Copilot to UAT
   run: |
     pwsh -Command "
-      .\Invoke-Navigator-Enhanced.ps1 `
-        -Mode Quick `
+      .\Navigator.ps1 `
+        -Mode SmartTest `
         -BotName 'Sales Assistant' `
         -Target 'UAT' `
         -NoConfirm
@@ -587,8 +587,8 @@ Navigator works great in automation scenarios:
 - task: PowerShell@2
   inputs:
     targetType: 'filePath'
-    filePath: '$(System.DefaultWorkingDirectory)/Invoke-Navigator-Enhanced.ps1'
-    arguments: '-Mode Quick -BotName "Sales Assistant" -Target "UAT" -NoConfirm'
+    filePath: '$(System.DefaultWorkingDirectory)/Navigator.ps1'
+    arguments: '-Mode SmartTest -BotName "Sales Assistant" -Target "UAT" -NoConfirm'
 ```
 
 ---
@@ -601,8 +601,8 @@ Deploy multiple copilots:
 $copilots = @("Sales Assistant", "Support Bot", "Product Catalog")
 
 foreach ($bot in $copilots) {
-    .\Invoke-Navigator-Enhanced.ps1 `
-        -Mode Quick `
+    .\Navigator.ps1 `
+        -Mode SmartTest `
         -BotName $bot `
         -Target "UAT" `
         -NoConfirm
@@ -628,7 +628,7 @@ foreach ($bot in $copilots) {
 **Q: Do I need an API key to use Navigator?**
 **A:** No! Navigator works perfectly without any API keys. AI features are 100% optional.
 
-**Q: What's the difference between Quick and Full mode?**
+**Q: What's the difference between Quick and DV Solution Migration mode?**
 **A:**
 - **Quick:** 30-60s, no solution, perfect for testing
 - **Full:** 4-8min, with solution, perfect for production
@@ -638,29 +638,29 @@ foreach ($bot in $copilots) {
 
 ### Technical
 
-**Q: How does Quick mode work without solutions?**
+**Q: How does Smart Test mode work without solutions?**
 **A:** Bots are Dataverse entities that don't require custom solutions to exist. They're automatically placed in the "Default Solution."
 
-**Q: Can I deploy to Production with Quick mode?**
-**A:** No. Production deployments automatically use Full mode for safety and compliance.
+**Q: Can I deploy to Production with Smart Test mode?**
+**A:** No. Production deployments automatically use DV Solution Migration mode for safety and compliance.
 
 **Q: What if my copilot has dependencies?**
-**A:** Quick mode works for simple copilots. For complex dependencies, use Full mode which packages everything together.
+**A:** Smart Test mode works for simple copilots. For complex dependencies, use DV Solution Migration mode which packages everything together.
 
 ---
 
 ### Deployment
 
 **Q: How do I test changes quickly?**
-**A:** Use Quick mode! It's designed for rapid iteration:
+**A:** Use Smart Test mode! It's designed for rapid iteration:
 ```powershell
-.\Invoke-Navigator-Enhanced.ps1 quick
+.\Navigator.ps1 quick
 ```
 
 **Q: How do I deploy to production?**
-**A:** Use Full mode for proper governance:
+**A:** Use DV Solution Migration mode for proper governance:
 ```powershell
-.\Invoke-Navigator-Enhanced.ps1 -Mode Full -Target "Production"
+.\Navigator.ps1 -Mode DV -Target "Production"
 ```
 
 **Q: Can I automate deployments?**
@@ -672,11 +672,11 @@ foreach ($bot in $copilots) {
 
 ### For End Users
 
-✅ **Quick Deploy** when testing (30-60 seconds)
-✅ **Full Migration** when going to production (4-8 minutes)
+✅ **Smart Test** when testing (30-60 seconds)
+✅ **DV Solution Migration** when going to production (4-8 minutes)
 ✅ **No API keys required** (works out-of-the-box)
 ✅ **Three ways to use** (Skill, PowerShell, VS Code future)
-✅ **Production safety** (auto-switches to Full mode)
+✅ **Production safety** (auto-switches to DV Solution Migration mode)
 
 ### For Administrators
 
@@ -695,9 +695,9 @@ foreach ($bot in $copilots) {
 
 ---
 
-## 📊 Comparison: Quick vs Full
+## 📊 Comparison: Smart Test vs DV Solution Migration
 
-| Aspect | Quick Mode | Full Mode |
+| Aspect | Smart Test Mode | DV Solution Migration Mode |
 |--------|-----------|-----------|
 | **Time** | 30-60 seconds | 4-8 minutes |
 | **Solution** | No (direct deploy) | Yes (packaged) |

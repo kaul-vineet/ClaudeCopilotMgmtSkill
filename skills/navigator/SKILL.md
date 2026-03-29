@@ -10,11 +10,11 @@ triggers:
 ## Quick Reference
 
 ```bash
-# Quick Deploy (default - for testing)
+# Smart Test (default - for testing)
 /navigator Sales Assistant to UAT
 /navigator quick
 
-# Full Migration (with solution - for production)
+# DV Solution Migration (with solution - for production)
 /navigator full
 /navigator to Production
 ```
@@ -23,7 +23,7 @@ triggers:
 
 ## Two Deployment Modes
 
-### ⚡ Quick Mode (Default)
+### ⚡ Smart Test Mode (Default)
 
 **Purpose:** Fast testing and iteration
 
@@ -52,7 +52,7 @@ Result:
 
 ---
 
-### 📦 Full Mode
+### 📦 DV Solution Migration Mode
 
 **Purpose:** Production deployment with governance
 
@@ -93,27 +93,27 @@ Extract from user input:
 - **Target environment:** If specified
 
 **Examples:**
-- `/navigator Sales Assistant to UAT` → Quick mode, bot="Sales Assistant", target="UAT"
-- `/navigator quick` → Quick mode, interactive selection
-- `/navigator full` → Full mode, interactive selection
-- `/navigator to Production` → Full mode (auto-switch), target="Production"
+- `/navigator Sales Assistant to UAT` → Smart Test mode, bot="Sales Assistant", target="UAT"
+- `/navigator quick` → Smart Test mode, interactive selection
+- `/navigator full` → DV Solution Migration mode, interactive selection
+- `/navigator to Production` → DV Solution Migration mode (auto-switch), target="Production"
 
 ---
 
 ### Step 2: Detect Mode
 
-**Auto-select Quick mode when:**
+**Auto-select Smart Test mode when:**
 - User says "quick", "test", "deploy"
 - Target is Dev/Test/UAT/Sandbox
 - User wants to "test" or "try"
 - **Default if not specified**
 
-**Auto-select Full mode when:**
+**Auto-select DV Solution Migration mode when:**
 - User says "full", "migrate", "production"
 - Target is "Production"
 - User mentions "formal deployment" or "release"
 
-**Safety rule:** Production target ALWAYS uses Full mode, regardless of user request.
+**Safety rule:** Production target ALWAYS uses DV Solution Migration mode, regardless of user request.
 
 ---
 
@@ -132,22 +132,22 @@ This ensures the script knows it's running as a Claude Code skill.
 
 Navigate to skill scripts directory and run:
 
-**For Quick Mode:**
+**For Smart Test Mode:**
 ```bash
 cd ~/.claude/skills/navigator/scripts
-.\Invoke-Navigator-Enhanced.ps1 -Mode Quick -BotName "<name>" -Target "<env>" -NoConfirm
+.\Navigator.ps1 -Mode SmartTest -BotName "<name>" -Target "<env>" -NoConfirm
 ```
 
-**For Full Mode:**
+**For DV Solution Migration Mode:**
 ```bash
 cd ~/.claude/skills/navigator/scripts
-.\Invoke-Navigator-Enhanced.ps1 -Mode Full -Target "<env>" -NoConfirm
+.\Navigator.ps1 -Mode DV -Target "<env>" -NoConfirm
 ```
 
 **Interactive Mode (no parameters):**
 ```bash
 cd ~/.claude/skills/navigator/scripts
-.\Invoke-Navigator-Enhanced.ps1 -Mode <Quick|Full>
+.\Navigator.ps1 -Mode <SmartTest|DV>
 ```
 
 ---
@@ -165,9 +165,9 @@ Display script output in conversation as it executes:
 
 When deployment completes, summarize:
 
-**Quick Mode:**
+**Smart Test Mode:**
 ```
-✅ Quick Deploy Complete
+✅ Smart Test Complete
 
 Copilot: Sales Assistant
 Target: UAT
@@ -180,9 +180,9 @@ https://copilotstudio.microsoft.com/environments/.../bots/.../canvas
 Your copilot is ready to test in UAT!
 ```
 
-**Full Mode:**
+**DV Solution Migration Mode:**
 ```
-✅ Full Migration Complete
+✅ DV Solution Migration Complete
 
 Copilot: Sales Assistant
 Target: Production
@@ -204,7 +204,7 @@ User: I want to test Sales Assistant in UAT
 Claude:
 I'll quickly deploy Sales Assistant to UAT for testing.
 
-Running Quick Deploy mode...
+Running Smart Test mode...
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧭 NAVIGATOR v2.0 - Copilot Deployment Tool
@@ -255,13 +255,13 @@ Your copilot is ready to test! The deployment took 35 seconds and updated the ex
 User: Deploy Sales Assistant to Production
 
 Claude:
-I notice you're deploying to Production. I'll automatically use Full Migration mode for safety and proper governance.
+I notice you're deploying to Production. I'll automatically use DV Solution Migration mode for safety and proper governance.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧭 NAVIGATOR v2.0 - Copilot Deployment Tool
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🔒 Target is Production - automatically switching to Full mode for safety
+🔒 Target is Production - automatically switching to DV Solution Migration mode for safety
 
 📋 Deployment Configuration:
   Copilot:  Sales Assistant
@@ -332,14 +332,14 @@ else:
 
 ## Important Notes
 
-### For Quick Mode:
+### For Smart Test Mode:
 - ✅ Perfect for daily testing and iteration
 - ✅ No cleanup needed (just delete the bot when done)
 - ✅ Can run multiple times (overwrites in place)
 - ⚠️ Not tracked in formal ALM
 - ⚠️ Not suitable for production
 
-### For Full Mode:
+### For DV Solution Migration Mode:
 - ✅ Production-grade deployment
 - ✅ Full audit trail and versioning
 - ✅ Managed solution support
@@ -347,25 +347,25 @@ else:
 - ⚠️ Creates solution artifacts
 
 ### Production Safety:
-- 🔒 Production deployments ALWAYS use Full mode
-- 🔒 No Quick deploy to Production (auto-switched)
+- 🔒 Production deployments ALWAYS use DV Solution Migration mode
+- 🔒 No Smart Test deploy to Production (auto-switched)
 - 🔒 Proper governance enforced
 
 ---
 
 ## Troubleshooting
 
-### Quick Mode Issues:
+### Smart Test Mode Issues:
 
 **"Copilot already exists"**
-- This is expected - Quick mode updates the existing copilot
+- This is expected - Smart Test mode updates the existing copilot
 - The update happens automatically
 
 **"Component failed to update"**
 - Check if component has dependencies
 - Verify connections exist in target environment
 
-### Full Mode Issues:
+### DV Solution Migration Mode Issues:
 
 **"Solution import failed"**
 - Follow standard solution troubleshooting
@@ -380,10 +380,10 @@ Navigator v2.0 provides two deployment modes:
 
 | Mode | Speed | Solution | Use Case |
 |------|-------|----------|----------|
-| **Quick** | 30-60s | No | Testing, iteration |
-| **Full** | 4-8min | Yes | Production, ALM |
+| **Smart Test** | 30-60s | No | Testing, any environment |
+| **DV Solution Migration** | 4-8min | Yes | Production, ALM |
 
-**Default:** Quick mode for speed
-**Production:** Always Full mode for safety
+**Default:** Smart Test mode for speed
+**Production:** Always DV Solution Migration mode for safety
 
 **One skill. Two modes. Complete flexibility.**

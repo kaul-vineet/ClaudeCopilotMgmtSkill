@@ -5,6 +5,18 @@ All notable changes to Navigator - Copilot Migration Pathfinder will be document
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-03-28
+
+### Changed
+- Renamed `Invoke-Navigator-Enhanced.ps1` → `Navigator.ps1` (shorter, cleaner)
+- Mode `Quick` renamed to `SmartTest` — deploys to any environment, not just UAT
+- Mode `Full` renamed to `DV` — displays as "DV Solution Migration"
+- Updated all labels, parameters, command IDs, and descriptions across all files
+- VS Code commands: "Navigator: Quick Deploy" → "Navigator: Smart Test", "Navigator: Full Migration" → "Navigator: DV Solution Migration"
+- VS Code command IDs: `navigator.quickDeploy` → `navigator.smartTest`, `navigator.fullMigration` → `navigator.dvMigration`
+
+---
+
 ## [2.1.0] - 2026-03-28
 
 ### Added
@@ -270,6 +282,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date       | Description                                          |
 |---------|------------|------------------------------------------------------|
+| 2.2.0   | 2026-03-28 | Rename script, SmartTest/DV modes, terminology update |
 | 2.1.0   | 2026-03-28 | VS Code extension (Channel 3), bug fixes             |
 | 2.0.0   | 2026-03-28 | Dual-mode deployment, three-channel architecture     |
 | 1.1.0   | 2026-03-28 | Added copilot analysis feature                       |

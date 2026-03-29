@@ -109,7 +109,7 @@ function Test-Prerequisites {
     # Check source files
     $requiredFiles = @(
         "skills\navigator\SKILL.md",
-        "skills\navigator\scripts\Invoke-Navigator-Enhanced.ps1",
+        "skills\navigator\scripts\Navigator.ps1",
         "README.md"
     )
 
@@ -174,7 +174,7 @@ function Install-NavigatorSkill {
         # Copy the entire navigator directory
         Copy-Item -Path $sourceSkillDir -Destination (Split-Path $skillsDir -Parent) -Recurse -Force
         Write-Host "   ✅ SKILL.md" -ForegroundColor Green
-        Write-Host "   ✅ scripts/Invoke-Navigator-Enhanced.ps1" -ForegroundColor Green
+        Write-Host "   ✅ scripts/Navigator.ps1" -ForegroundColor Green
         Write-Host "   ✅ scripts/Invoke-Navigator.ps1" -ForegroundColor Green
         Write-Host "   ✅ scripts/Modules/ (4 modules)" -ForegroundColor Green
     }

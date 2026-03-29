@@ -2,71 +2,71 @@
 
 <#
 .SYNOPSIS
-    Navigator v2.0 - Copilot Deployment Tool
+    Navigator - Copilot Deployment Tool
 
 .DESCRIPTION
-    Deploy Copilot Studio bots across environments with two modes:
+    Deploy Copilot Studio bots across any Power Platform environment with two modes:
 
-    Quick Mode (default):
-    - Fast testing deployment (30-60 seconds)
+    SmartTest Mode (default):
+    - Fast deployment to any environment (30-60 seconds)
     - No solution packaging
     - Update in place
-    - Perfect for iteration
+    - Perfect for testing and iteration
 
-    Full Mode:
+    DV Mode (DV Solution Migration):
     - Production deployment (4-8 minutes)
-    - Solution packaging with audit trail
+    - Dataverse solution packaging with audit trail
     - Managed components
     - Production-grade
 
 .PARAMETER Mode
-    Quick or Full (default: Quick)
+    SmartTest or DV (default: SmartTest)
 
 .PARAMETER BotName
     Name of copilot to deploy
 
 .PARAMETER Source
-    Source environment (default: Development)
+    Source environment
 
 .PARAMETER Target
     Target environment
 
 .PARAMETER OpenTestChat
-    Open test chat in browser after deployment (Quick mode only)
+    Open test chat in browser after deployment (SmartTest mode only)
 
 .EXAMPLE
-    # Quick deploy (default) - Interactive
-    .\Invoke-Navigator-Enhanced.ps1
+    # SmartTest deploy (default) - Interactive
+    .\Navigator.ps1
 
 .EXAMPLE
-    # Quick deploy with parameters
-    .\Invoke-Navigator-Enhanced.ps1 -Mode Quick -BotName "Sales Assistant" -Target "UAT"
+    # SmartTest deploy with parameters
+    .\Navigator.ps1 -Mode SmartTest -BotName "Sales Assistant" -Target "UAT"
 
 .EXAMPLE
-    # Quick deploy shorthand
-    .\Invoke-Navigator-Enhanced.ps1 quick
+    # SmartTest deploy shorthand
+    .\Navigator.ps1 smarttest
 
 .EXAMPLE
-    # Full migration to production
-    .\Invoke-Navigator-Enhanced.ps1 -Mode Full -Target "Production"
+    # DV Solution Migration to production
+    .\Navigator.ps1 -Mode DV -Target "Production"
 
 .EXAMPLE
-    # Full migration shorthand
-    .\Invoke-Navigator-Enhanced.ps1 full
+    # DV Solution Migration shorthand
+    .\Navigator.ps1 dv
 
 .NOTES
     Author: Copilot Zapper Team
-    Version: 2.0.0
+    Version: 2.1.0
     Requires: Azure CLI, PowerShell 7.0+
 #>
 
 [CmdletBinding()]
 param(
     [Parameter(Position=0)]
-    [string]$Command,  # Can be: "quick", "full", "test", "deploy", "migrate", "production", or bot name
+    [string]$Command,  # Can be: "smarttest", "dv", "test", "deploy", "migrate", "production", or bot name
 
-    [ValidateSet('Quick', 'Full')]
-    [string]$Mode = 'Quick',  # Default to Quick for testing
+    [ValidateSet('SmartTest', 'DV')]
+    [string]$Mode = 'SmartTest',  # Default to SmartTest
 
     [string]$BotName,
     [string]$Source = 'Development',
@@ -79,7 +79,7 @@ param(
 # Banner
 Write-Host ""
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-Write-Host "🧭 NAVIGATOR v2.0 - Copilot Deployment Tool" -ForegroundColor Cyan
+Write-Host "🧭 NAVIGATOR - Copilot Deployment Tool" -ForegroundColor Cyan
 Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
 Write-Host ""
 
@@ -101,13 +101,13 @@ catch {
 # Parse command if provided
 if ($Command) {
     switch -Regex ($Command) {
-        '^(quick|test|deploy)$' {
-            $Mode = 'Quick'
-            Write-Verbose "Mode set to Quick via command: $Command"
+        '^(smarttest|test|deploy)$' {
+            $Mode = 'SmartTest'
+            Write-Verbose "Mode set to SmartTest via command: $Command"
         }
-        '^(full|migrate|production)$' {
-            $Mode = 'Full'
-            Write-Verbose "Mode set to Full via command: $Command"
+        '^(dv|migrate|production)$' {
+            $Mode = 'DV'
+            Write-Verbose "Mode set to DV via command: $Command"
         }
         default {
             # Assume it's a bot name
@@ -119,11 +119,11 @@ if ($Command) {
     }
 }
 
-# Smart mode detection - Production always uses Full mode
-if ($Target -eq 'Production' -and $Mode -eq 'Quick') {
-    Write-Host "🔒 Target is Production - automatically switching to Full mode for safety" -ForegroundColor Yellow
+# Production always uses DV Solution Migration
+if ($Target -eq 'Production' -and $Mode -eq 'SmartTest') {
+    Write-Host "🔒 Target is Production - automatically switching to DV Solution Migration for safety" -ForegroundColor Yellow
     Write-Host ""
-    $Mode = 'Full'
+    $Mode = 'DV'
 }
 
 # Interactive selection if parameters not provided
@@ -164,12 +164,12 @@ Write-Host "  Copilot:  $BotName" -ForegroundColor White
 Write-Host "  From:     $Source" -ForegroundColor White
 Write-Host "  To:       $Target" -ForegroundColor White
 Write-Host "  Mode:     " -NoNewline -ForegroundColor White
-if ($Mode -eq 'Quick') {
-    Write-Host "Quick " -NoNewline -ForegroundColor Green
+if ($Mode -eq 'SmartTest') {
+    Write-Host "Smart Test " -NoNewline -ForegroundColor Green
     Write-Host "(fast, no solution, ~30-60s)" -ForegroundColor Gray
 } else {
-    Write-Host "Full " -NoNewline -ForegroundColor Magenta
-    Write-Host "(comprehensive, with solution, ~4-8min)" -ForegroundColor Gray
+    Write-Host "DV Solution Migration " -NoNewline -ForegroundColor Magenta
+    Write-Host "(with DV solution, ~4-8min)" -ForegroundColor Gray
 }
 Write-Host ""
 
@@ -189,10 +189,9 @@ Write-Host ""
 # Execute based on mode
 try {
     switch ($Mode) {
-        'Quick' {
-            # Quick Deploy Mode
+        'SmartTest' {
             Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Green
-            Write-Host "⚡ QUICK DEPLOY MODE" -ForegroundColor Green
+            Write-Host "⚡ SMART TEST MODE" -ForegroundColor Green
             Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Green
 
             $result = Invoke-QuickDeploy `
@@ -203,7 +202,7 @@ try {
 
             Write-Host ""
             Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Green
-            Write-Host "✅ QUICK DEPLOY COMPLETE" -ForegroundColor Green
+            Write-Host "✅ SMART TEST COMPLETE" -ForegroundColor Green
             Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Green
             Write-Host ""
             Write-Host "  Time:   $($result.Duration)" -ForegroundColor White
@@ -213,34 +212,27 @@ try {
             Write-Host "🔗 Test URL:" -ForegroundColor Cyan
             Write-Host "  $($result.TestUrl)" -ForegroundColor White
             Write-Host ""
-            Write-Host "💡 Tip: The copilot was deployed directly (no solution). To delete, just remove the bot from $Target." -ForegroundColor Gray
+            Write-Host "💡 Tip: Deployed directly (no solution). To delete, just remove the bot from $Target." -ForegroundColor Gray
             Write-Host ""
         }
 
-        'Full' {
-            # Full Migration Mode
+        'DV' {
             Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Magenta
-            Write-Host "📦 FULL MIGRATION MODE" -ForegroundColor Magenta
+            Write-Host "📦 DV SOLUTION MIGRATION MODE" -ForegroundColor Magenta
             Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Magenta
-            Write-Host ""
-            Write-Host "⚠️  Full migration mode will use the original Navigator (v1.0) script" -ForegroundColor Yellow
-            Write-Host "    with solution packaging and comprehensive migration." -ForegroundColor Yellow
             Write-Host ""
 
-            # Call original Navigator script for Full mode
             $originalScript = Join-Path $PSScriptRoot "Invoke-Navigator.ps1"
 
             if (Test-Path $originalScript) {
-                Write-Host "Launching original Navigator for full migration..." -ForegroundColor Cyan
+                Write-Host "Launching DV Solution Migration..." -ForegroundColor Cyan
                 Write-Host ""
-
-                # Execute original Navigator
                 & $originalScript
             }
             else {
-                Write-Error "Original Navigator script not found at: $originalScript"
+                Write-Error "DV Solution Migration script not found at: $originalScript"
                 Write-Host ""
-                Write-Host "Please ensure Invoke-Navigator.ps1 exists for Full migration mode." -ForegroundColor Yellow
+                Write-Host "Please ensure Invoke-Navigator.ps1 exists for DV Solution Migration mode." -ForegroundColor Yellow
                 Write-Host ""
                 exit 1
             }

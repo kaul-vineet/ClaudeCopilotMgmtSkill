@@ -8,13 +8,13 @@ export function activate(context: vscode.ExtensionContext) {
     const outputChannel = vscode.window.createOutputChannel('Navigator');
 
     context.subscriptions.push(
-        vscode.commands.registerCommand('navigator.quickDeploy', () =>
-            runDeploy(context, 'Quick', outputChannel)
+        vscode.commands.registerCommand('navigator.smartTest', () =>
+            runDeploy(context, 'SmartTest', outputChannel)
         )
     );
 
     context.subscriptions.push(
-        vscode.commands.registerCommand('navigator.fullMigration', () =>
+        vscode.commands.registerCommand('navigator.dvMigration', () =>
             runDeploy(context, 'Full', outputChannel)
         )
     );
@@ -24,10 +24,10 @@ export function deactivate() {}
 
 async function runDeploy(
     context: vscode.ExtensionContext,
-    mode: 'Quick' | 'Full',
+    mode: 'SmartTest' | 'DV',
     outputChannel: vscode.OutputChannel
 ): Promise<void> {
-    const modeLabel = mode === 'Quick' ? 'Quick Deploy' : 'Full Migration';
+    const modeLabel = mode === 'SmartTest' ? 'Smart Test' : 'DV Solution Migration';
 
     // Collect bot name — required because Read-Host hangs in a non-TTY process
     const botName = await vscode.window.showInputBox({
@@ -55,14 +55,14 @@ async function runDeploy(
         'skills',
         'navigator',
         'scripts',
-        'Invoke-Navigator-Enhanced.ps1'
+        'Navigator.ps1'
     );
 
     const args = [
         '-ExecutionPolicy', 'Bypass',
         '-NonInteractive',
         '-File', scriptPath,
-        '-Mode', mode,
+        '-Mode', mode === 'SmartTest' ? 'SmartTest' : 'DV',
         '-Target', target,
         '-NoConfirm'
     ];
@@ -129,12 +129,12 @@ async function runDeploy(
             }
         );
 
-        // Extract test URL from output for Quick Deploy button
+        // Extract test URL from output for Smart Test button
         const urlMatch = outputBuffer.match(/https:\/\/copilotstudio\.microsoft\.com\/[^\s]+/);
         const testUrl = urlMatch ? urlMatch[0] : null;
 
         const actions: string[] = ['Show Output'];
-        if (testUrl && mode === 'Quick') {
+        if (testUrl && mode === 'SmartTest') {
             actions.unshift('Open Test Chat');
         }
 
