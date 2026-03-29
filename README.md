@@ -50,9 +50,9 @@ Navigator gives you **two ways to move copilots between environments:**
 - [Quick Start](#-quick-start)
 - [Installation](#-installation)
 - [Usage](#-usage)
-  - [Smart Test](#-quick-deploy-testing)
-  - [DV Solution Migration](#-full-migration-production)
-  - [Three Ways to Use](#-three-ways-to-use-navigator)
+  - [How to Invoke](#-how-to-invoke-navigator)
+  - [Smart Test Mode](#-smart-test-mode)
+  - [DV Solution Migration](#-dv-solution-migration)
 - [How It Works](#-how-it-works)
 - [What Each Script Does](#-what-each-script-does)
 - [Troubleshooting](#-troubleshooting)
@@ -169,72 +169,128 @@ Or sideload during development:
 
 ## 🎨 Usage
 
-### ⚡ Smart Test (Any Environment)
+Navigator has two deployment modes. You can trigger either from Claude Code, PowerShell, or VS Code.
 
-**Use When:** Testing changes, validating functionality, iterating on development
+---
 
-**Example 1: Interactive Mode**
-```powershell
-.\Navigator.ps1 -Mode SmartTest
+### 🧭 How to Invoke Navigator
+
+#### ⭐ Claude Code Skill — Recommended
+
+> The primary way to use Navigator. Type a natural language command and Claude handles the rest — no parameters to remember, no terminal to switch to.
+
+**In Claude Code CLI or the VS Code Claude extension:**
+
+```
+/navigator Sales Assistant to UAT
 ```
 
-Follow the prompts to select copilot and target environment.
-
-**Example 2: With Parameters**
-```powershell
-.\Navigator.ps1 `
-    -Mode SmartTest `
-    -BotName "Sales Assistant" `
-    -Source "Development" `
-    -Target "UAT" `
-    -OpenTestChat
+```
+/navigator dv Sales Assistant to Production
 ```
 
-**Example 3: Shorthand**
-```powershell
-.\Navigator.ps1 quick
+Navigator responds inline:
+
+```
+⚡ Smart Test → UAT...
+[1/3] ✅ Retrieved 15 components
+[2/3] ✅ Updated copilot
+[3/3] ✅ Published
+
+✅ Done in 35 seconds!
+🔗 Test URL: https://copilotstudio.microsoft.com/...
 ```
 
-**What Happens:**
-1. ✅ Gets copilot from Development
-2. ✅ Deploys directly to any environment (no solution)
-3. ✅ Updates existing copilot or creates new
+- Natural language — describe what you want
+- No parameters to remember
+- Progress shown in the conversation
+- Works in Claude Code CLI and VS Code Claude extension
+
+---
+
+#### 2️⃣ VS Code Extension
+
+Never leave your IDE. Use the keyboard shortcut or Command Palette:
+
+```
+Ctrl+Shift+T                          → Smart Test
+Ctrl+Shift+P → Navigator: Smart Test  → Smart Test
+Ctrl+Shift+P → Navigator: DV Solution Migration → DV mode
+```
+
+1. Enter bot name in the input box
+2. Select target environment from the dropdown
+3. Watch progress notifications: `[1/3]`, `[2/3]`, `[3/3]`
+4. Click **"Open Test Chat"** on completion (Smart Test)
+
+Full output is captured in the **Navigator output channel**.
+
+---
+
+#### 3️⃣ PowerShell Script
+
+For automation, CI/CD pipelines, or when running without Claude Code:
+
+```powershell
+.\Navigator.ps1 -Mode SmartTest -BotName "Sales Assistant" -Target "UAT"
+.\Navigator.ps1 -Mode DV -BotName "Sales Assistant" -Target "Production"
+```
+
+- Full parameter control
+- Scriptable and automatable
+- Works in GitHub Actions and Azure DevOps
+
+---
+
+### ⚡ Smart Test Mode
+
+**Use when:** Testing changes, iterating, validating before production
+
+**What happens:**
+1. ✅ Gets copilot and all components from source environment
+2. ✅ Deploys directly to target (no solution packaging)
+3. ✅ Updates in place if already exists, creates new if not
 4. ✅ Publishes immediately
 5. ✅ Opens test chat in browser
 
 **Time:** 30-60 seconds
 
+```powershell
+# Interactive — prompts for copilot and environment
+.\Navigator.ps1 -Mode SmartTest
+
+# With parameters
+.\Navigator.ps1 -Mode SmartTest -BotName "Sales Assistant" -Source "Development" -Target "UAT" -OpenTestChat
+```
+
+> 💡 Bots deployed via Smart Test land in the Default Solution. To clean up, just delete the bot from the target environment.
+
 ---
 
-### 📦 DV Solution Migration (Production)
+### 📦 DV Solution Migration
 
-**Use When:** Deploying to production, need audit trail, formal ALM process
+**Use when:** Deploying to production, need audit trail, formal ALM process
 
-**Example 1: Interactive Mode**
-```powershell
-.\Navigator.ps1 -Mode DV
-```
-
-**Example 2: To Production**
-```powershell
-.\Navigator.ps1 `
-    -Mode DV `
-    -BotName "Sales Assistant" `
-    -Target "Production"
-```
-
-> 🔒 **Production Safety:** Deploying to "Production" automatically uses DV Solution Migration mode, even if you specify Smart Test mode.
-
-**What Happens:**
+**What happens:**
 1. ✅ Exports copilot from source
 2. ✅ Prompts for migration type (Full Copilot or Template Only)
 3. ✅ Prompts for parameter customisation (name, description, language, schema name)
 4. ✅ Creates solution: `Navigator_SalesAssistant_YYYYMMDD_HHMMSS`
 5. ✅ Packages all components with dependencies
-6. ✅ Imports to target as managed solution
+6. ✅ Imports as managed solution
 7. ✅ Publishes with full audit trail
 
 **Time:** 4-8 minutes
+
+```powershell
+# Interactive
+.\Navigator.ps1 -Mode DV
+
+# To Production
+.\Navigator.ps1 -Mode DV -BotName "Sales Assistant" -Target "Production"
+```
+
+> 🔒 **Production Safety:** Targeting "Production" automatically switches to DV Solution Migration, even if Smart Test was specified.
 
 ---
 
@@ -259,64 +315,6 @@ During DV migration you are prompted to optionally override:
 | **Schema Name** | `new_SalesAssistant` | Dataverse unique name |
 
 Press Enter to keep the original value for any field.
-
----
-
-### 🎯 Three Ways to Use Navigator
-
-#### 1️⃣ Claude Code Skill
-
-```
-User: /navigator Sales Assistant to UAT
-
-Navigator:
-⚡ Quick deploying to UAT...
-[1/3] ✅ Retrieved 15 components
-[2/3] ✅ Updated copilot
-[3/3] ✅ Published
-
-✅ Done in 35 seconds!
-🔗 Test URL: https://...
-```
-
-**Pros:**
-- Natural conversation interface
-- No need to remember parameters
-- Progress shown in conversation
-- Claude Code integration
-
----
-
-#### 2️⃣ PowerShell Script
-
-```powershell
-PS> .\Navigator.ps1 -Mode SmartTest -BotName "Sales Assistant" -Target "UAT"
-```
-
-**Pros:**
-- Scriptable and automatable
-- Works in CI/CD pipelines
-- No Claude Code needed
-- Full parameter control
-
----
-
-#### 3️⃣ VS Code Extension
-
-```
-1. Press Ctrl+Shift+T in VS Code
-2. Enter bot name
-3. Select target environment
-4. Watch progress notification
-5. Click "Open Test Chat" when done
-```
-
-**Pros:**
-- IDE integration — never leave VS Code
-- `Ctrl+Shift+T` keyboard shortcut
-- Progress notifications with milestones
-- "Open Test Chat" button on completion
-- Navigator output channel for full logs
 
 ---
 
