@@ -103,11 +103,13 @@ cd C:\code\ClaudeCopilotMgmtSkill
 
 Then use it in Claude Code:
 ```
-/navigator quick          # Quick deploy
-/navigator full           # Full migration
+/navigator quick          # Smart Test deploy
+/navigator dv             # DV Solution Migration
 ```
 
 **Restart Claude Code** after installation.
+
+> ⚠️ **Note:** The installer copies files to `~/.claude/skills/navigator/`. Two copies are maintained — your project folder and the installed copy. After any project update, re-run `.\install-skill.ps1 -Update` to keep the installed copy in sync.
 
 ---
 
