@@ -16,13 +16,13 @@
 
 > **If you build Microsoft Copilot Studio agents, you know the pain:** every time you want to test a change, you're stuck manually exporting, importing, publishing — a process that eats 10-15 minutes of your day, every single time. Multiply that across a team and environments, and you're losing hours to deployment busywork instead of building. **Navigator eliminates that entirely.**
 
-Navigator is an **open-source deployment automation tool** for Microsoft Copilot Studio that moves your agents between Power Platform environments in seconds — not minutes. It talks directly to the Dataverse API, handles all component types (topics, knowledge sources, agent skills), and gives you three ways to trigger it: a Claude Code skill, a PowerShell script, or a VS Code keyboard shortcut. No manual exports. No solution wizards. No waiting.
+Navigator is a **Claude Code skill** — type `/navigator` in Claude Code CLI or the VS Code Claude extension and your agent is live in another environment in seconds. Under the hood it talks directly to the Dataverse API, handles every component type (topics, knowledge sources, agent skills), and shields you from all the Power Platform ceremony. No manual exports. No solution wizards. No context-switching.
 
-- 🚀 **Deploy any agent to any environment in 30-60 seconds** with Smart Test mode
-- 🏗️ **Production-grade DV Solution packaging** with full audit trail when you need it
-- 🤖 **Three channels** — Claude Code `/navigator`, PowerShell, or `Ctrl+Shift+T` in VS Code
-- 🔒 **Production safety built-in** — auto-switches to DV Solution Migration when targeting Production
-- ⚙️ **Zero manual steps** — authenticate once with Azure CLI, then it's one command
+- 🧭 **Claude Skill first** — invoke with `/navigator` in Claude Code CLI or VS Code, describe what you want in plain English
+- 🚀 **30-60 second deploys** — Smart Test mode pushes any agent to any environment without solution packaging
+- 🏗️ **Production-grade DV Solution Migration** — full solution packaging with audit trail when governance matters
+- 🔒 **Production safety built-in** — auto-escalates to DV Solution Migration when targeting Production
+- ⚙️ **Zero manual steps** — authenticate once with Azure CLI, then just talk to Claude
 - 🆓 **Free and open-source** — no licences, no SaaS fees, no API keys required
 
 ---
@@ -633,8 +633,8 @@ foreach ($bot in $copilots) {
 | Document | Purpose |
 |----------|---------|
 | [README.md](README.md) | Main documentation |
-| [CHANGELOG.md](CHANGELOG.md) | Version history |
-| [ROADMAP.md](ROADMAP.md) | Future plans |
+| [CHANGELOG.md](planning/CHANGELOG.md) | Version history |
+| [ROADMAP.md](planning/ROADMAP.md) | Future plans |
 
 ---
 
@@ -742,7 +742,7 @@ foreach ($bot in $copilots) {
 
 ### Contributors
 
-1. **Check [ROADMAP.md](ROADMAP.md)** for planned features
+1. **Check [ROADMAP.md](planning/ROADMAP.md)** for planned features
 2. **Submit issues** or PRs
 3. **Help improve documentation**
 
