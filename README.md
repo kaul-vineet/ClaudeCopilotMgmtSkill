@@ -49,11 +49,11 @@ Navigator gives you **two ways to move copilots between environments:**
 
 - [Quick Start](#-quick-start)
 - [Installation](#-installation)
+- [How It Works](#-how-it-works)
 - [Usage](#-usage)
   - [How to Invoke](#-how-to-invoke-navigator)
   - [Smart Test Mode](#-smart-test-mode)
   - [DV Solution Migration](#-dv-solution-migration)
-- [How It Works](#-how-it-works)
 - [What Each Script Does](#-what-each-script-does)
 - [Troubleshooting](#-troubleshooting)
 - [Advanced Features](#-advanced-features)
@@ -164,6 +164,84 @@ Or sideload during development:
 **After installing:**
 - `Ctrl+Shift+T` → Smart Test
 - Command Palette (`Ctrl+Shift+P`) → "Navigator: Smart Test" or "Navigator: DV Solution Migration"
+
+---
+
+## 🔧 How It Works
+
+### Smart Test Mode Architecture
+
+```
+Source Environment
+    ↓
+1. Get copilot definition (API call)
+2. Get all components (topics, triggers, skills)
+    ↓
+Target Environment
+    ↓
+3. Check if copilot exists
+    ├─ Exists → Update in place (PATCH)
+    └─ Not exists → Create new (POST)
+    ↓
+4. Update/create components
+5. Publish
+    ↓
+✅ Done in 30-60 seconds
+
+Result: Copilot deployed directly (NO SOLUTION)
+```
+
+**Key Points:**
+- Direct Dataverse API calls
+- No solution packaging overhead
+- Bots exist in "Default Solution"
+- Updates existing copilots automatically
+- Fast and simple
+
+---
+
+### DV Solution Migration Mode Architecture
+
+```
+Source Environment
+    ↓
+1. Export copilot data
+2. Get all components
+    ↓
+3. Create solution in target
+4. Package components
+5. Import solution
+6. Add bot to solution
+7. Publish
+    ↓
+✅ Done in 4-8 minutes
+
+Result: Copilot packaged in custom solution
+```
+
+**Key Points:**
+- Solution-based packaging
+- Managed component support
+- Full audit trail
+- Version control
+- Production-grade
+
+---
+
+### Smart Mode Detection
+
+```powershell
+# Automatic production safety
+if ($Target -eq "Production") {
+    $Mode = "Full"  # Always use Full for Production
+}
+
+# Command-based detection
+"quick" | "test" | "deploy" → Smart Test mode
+"full" | "migrate" | "production" → DV Solution Migration mode
+
+# Default: Smart Test mode (testing is most common)
+```
 
 ---
 
@@ -315,84 +393,6 @@ During DV migration you are prompted to optionally override:
 | **Schema Name** | `new_SalesAssistant` | Dataverse unique name |
 
 Press Enter to keep the original value for any field.
-
----
-
-## 🔧 How It Works
-
-### Smart Test Mode Architecture
-
-```
-Source Environment
-    ↓
-1. Get copilot definition (API call)
-2. Get all components (topics, triggers, skills)
-    ↓
-Target Environment
-    ↓
-3. Check if copilot exists
-    ├─ Exists → Update in place (PATCH)
-    └─ Not exists → Create new (POST)
-    ↓
-4. Update/create components
-5. Publish
-    ↓
-✅ Done in 30-60 seconds
-
-Result: Copilot deployed directly (NO SOLUTION)
-```
-
-**Key Points:**
-- Direct Dataverse API calls
-- No solution packaging overhead
-- Bots exist in "Default Solution"
-- Updates existing copilots automatically
-- Fast and simple
-
----
-
-### DV Solution Migration Mode Architecture
-
-```
-Source Environment
-    ↓
-1. Export copilot data
-2. Get all components
-    ↓
-3. Create solution in target
-4. Package components
-5. Import solution
-6. Add bot to solution
-7. Publish
-    ↓
-✅ Done in 4-8 minutes
-
-Result: Copilot packaged in custom solution
-```
-
-**Key Points:**
-- Solution-based packaging
-- Managed component support
-- Full audit trail
-- Version control
-- Production-grade
-
----
-
-### Smart Mode Detection
-
-```powershell
-# Automatic production safety
-if ($Target -eq "Production") {
-    $Mode = "Full"  # Always use Full for Production
-}
-
-# Command-based detection
-"quick" | "test" | "deploy" → Smart Test mode
-"full" | "migrate" | "production" → DV Solution Migration mode
-
-# Default: Smart Test mode (testing is most common)
-```
 
 ---
 
