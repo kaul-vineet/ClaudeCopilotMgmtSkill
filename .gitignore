@@ -33,6 +33,11 @@ migration-report-*.txt
 docs/
 planning/
 
+# Large media files
+*.mp4
+*.mov
+*.avi
+
 # Temporary files
 *.tmp
 *.temp
