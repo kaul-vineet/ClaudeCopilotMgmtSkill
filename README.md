@@ -16,18 +16,26 @@
 
 > **If you build Microsoft Copilot Studio agents, you know the pain:** every time you want to test a change, you're stuck manually exporting, importing, publishing — a process that eats 10-15 minutes of your day, every single time. Multiply that across a team and environments, and you're losing hours to deployment busywork instead of building. **Navigator eliminates that entirely.**
 
-Navigator is a **Claude Code skill** — type `/navigator` in Claude Code CLI or the VS Code Claude extension and your agent is live in another environment in seconds. Under the hood it talks directly to the Dataverse API, handles every component type (topics, knowledge sources, agent skills), and shields you from all the Power Platform ceremony. No manual exports. No solution wizards. No context-switching.
+Navigator talks directly to the Dataverse API, handles every component type (topics, knowledge sources, agent skills), and shields you from all the Power Platform ceremony. No manual exports. No solution wizards. No context-switching. Trigger it three ways — whichever fits how you work:
 
-- 🧭 **Claude Skill first** — invoke with `/navigator` in Claude Code CLI or VS Code, describe what you want in plain English
+- 🧭 **Claude Skill** — type `/navigator` in Claude Code CLI or the VS Code Claude extension, describe what you want in plain English
+- 🖥️ **VS Code extension** — `Ctrl+Shift+T` or Command Palette, never leave your IDE; progress tracked in the Navigator output channel
+- ⚙️ **PowerShell directly** — `.\Navigator.ps1`, fully scriptable for CI/CD pipelines and automation
+
+Whichever channel you use, the same deployment engine runs underneath.
+
 - 🚀 **30-60 second deploys** — Smart Test mode pushes any agent to any environment without solution packaging
 - 🏗️ **Production-grade DV Solution Migration** — full solution packaging with audit trail when governance matters
 - 🔒 **Production safety built-in** — auto-escalates to DV Solution Migration when targeting Production
-- ⚙️ **Zero manual steps** — authenticate once with Azure CLI, then just talk to Claude
 - 🆓 **Free and open-source** — no licences, no SaaS fees, no API keys required
+
+**Smart Test deploy** is Navigator's default mode — and the one you'll use every day. It skips solution packaging entirely, talking directly to the Dataverse API to push your copilot and all its components (topics, triggers, agent skills) straight into any target environment in 30-60 seconds. Already got that bot in the target? It updates in place. Not there yet? It creates it. Either way, it publishes and hands you a test URL the moment it's done. No exports. No solution wizards. No waiting.
+
+> 🔒 Targeting Production? Navigator automatically escalates to DV Solution Migration — governance stays intact without you having to think about it.
 
 ---
 
-Navigator gives you **two ways to move copilots between environments:**
+Navigator gives you **three ways to move copilots between environments** — and all three are real deployments, not wrappers:
 
 ### ⚡ Smart Test Mode
 **For Testing & Iteration**
